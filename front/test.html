@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!--
+    JSPM Generator Import Map
+    Edit URL: https://generator.jspm.io/#U2NgYGBkDM0rySzJSU1hcCguyc8t0AeTWcUO5noGega6SakliaYAYTzJAykA
+  -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+        }
+      }
+    </script>
+
+    <!-- ES Module Shims: Import maps polyfill for modules browsers without import maps support (all except Chrome 89+) -->
+    <script
+      async
+      src="https://ga.jspm.io/npm:es-module-shims@1.5.1/dist/es-module-shims.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="module">
+      import { Client } from "@stomp/stompjs";
+
+      console.log("================");
+      const imageElement = document.getElementById("img1");
+
+      const client = new Client({
+        brokerURL: "ws://127.0.0.1:15674/ws",
+        connectHeaders: {
+          login: "guest",
+          passcode: "guest",
+        },
+        onConnect() {
+          client.subscribe(`/queue/camera_118`, (message) => {
+            imageElement.src = `data:image/jpeg; base64,${message.body}`;
+          });
+        },
+        onStompError(frame) {
+          console.log("rabbit connection error", frame.body);
+        },
+        onWebSocketError(event) {
+          console.log("webSocket error", event);
+        },
+      });
+      client.activate();
+    </script>
+
+    <img id="img1" width="1024px" height="768px" alt="img" />
+  </body>
+</html>
